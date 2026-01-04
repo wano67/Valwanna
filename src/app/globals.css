@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #2b1b4f;
+  background-color: #fff7fb;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #fff7fb;
+  background-image:
+    radial-gradient(circle at 15% 18%, rgba(255, 182, 193, 0.5), transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(196, 181, 253, 0.5), transparent 26%),
+    radial-gradient(circle at 30% 82%, rgba(255, 244, 184, 0.35), transparent 32%),
+    linear-gradient(120deg, rgba(244, 114, 182, 0.12) 0 14%, transparent 14% 28%),
+    linear-gradient(70deg, rgba(196, 181, 253, 0.12) 0 18%, transparent 18% 32%),
+    radial-gradient(#ffd6e8 1px, transparent 1px),
+    radial-gradient(#e3d7ff 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    260px 260px,
+    230px 230px,
+    18px 18px,
+    22px 22px;
+  background-position: center;
+  color: #2b1b4f;
+  font-family: var(--font-sans), "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(244, 114, 182, 0.5);
+  outline-offset: 3px;
+}
+
+::-moz-selection {
+  background: #fecdd3;
+}
+
+::selection {
+  background: #fecdd3;
+}
