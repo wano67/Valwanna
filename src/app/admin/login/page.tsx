@@ -34,13 +34,6 @@ export default async function AdminLoginPage() {
             Coucou, c&apos;est la porte secrète pour gérer ma wishlist. 🤍
           </p>
         </div>
-        {sessionError ? (
-          <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            La configuration de session est manquante
-            (`SESSION_PASSWORD`). Ajoutez les variables requises dans
-            `.env.local`.
-          </div>
-        ) : null}
         <LoginForm />
       </div>
     </main>

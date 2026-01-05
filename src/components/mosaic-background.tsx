@@ -56,8 +56,8 @@ function TileIcon({ tile }: { tile: Tile }) {
       <img
         src="/favicon.png"
         alt=""
-        className="mosaic-tile animate-mosaic-pop opacity-70"
-        style={commonStyle}
+        className="mosaic-tile animate-mosaic-pop rounded-full bg-white/60 p-[3px] opacity-75 shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+        style={{ ...commonStyle, objectFit: "contain", aspectRatio: "1 / 1" }}
         loading="lazy"
       />
     );
