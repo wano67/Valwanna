@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function AdminLoginPage() {
-  let session: (SessionData & { [key: string]: unknown }) | null = null;
+  let session: (SessionData & Record<string, unknown>) | null = null;
   let sessionError = false;
 
   try {
