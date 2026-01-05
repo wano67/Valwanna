@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { Gift } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSessionWithResponse } from "@/lib/session";
+import type { SessionData } from "@/lib/session";
 import { toGiftDTO } from "@/lib/gift-serializer";
 import AdminDashboard from "@/components/admin/admin-dashboard";
 import type { GiftDTO } from "@/types/gift";
@@ -14,7 +15,7 @@ function serializeGift(gift: Gift): GiftDTO {
 }
 
 export default async function AdminPage() {
-  let session = null;
+  let session: (SessionData & { [key: string]: unknown }) | null = null;
   let sessionError = false;
 
   try {

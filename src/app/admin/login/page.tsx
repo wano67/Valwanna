@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionWithResponse } from "@/lib/session";
+import type { SessionData } from "@/lib/session";
 import LoginForm from "@/components/admin/login-form";
 
 export const metadata = {
@@ -7,7 +8,7 @@ export const metadata = {
 };
 
 export default async function AdminLoginPage() {
-  let session = null;
+  let session: (SessionData & { [key: string]: unknown }) | null = null;
   let sessionError = false;
 
   try {
