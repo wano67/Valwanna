@@ -42,8 +42,11 @@ export async function POST(request: Request) {
 
   const parsed = giftPayloadSchema.safeParse(payload);
   if (!parsed.success) {
+    const validationError =
+      parsed.error.issues[0]?.message ??
+      "Données invalides, vérifiez le titre et l'URL.";
     return NextResponse.json(
-      { error: "Données invalides, vérifiez le titre et l'URL." },
+      { error: validationError },
       { status: 400 },
     );
   }

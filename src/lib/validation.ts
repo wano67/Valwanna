@@ -1,10 +1,21 @@
 import { z } from "zod";
 
-const pricePreprocess = z.preprocess((val) => {
-  if (typeof val === "string" && val.trim() === "") return undefined;
-  if (typeof val === "string") return Number(val);
-  return val;
-}, z.number().positive().max(1_000_000).optional());
+const pricePreprocess = z.preprocess(
+  (val) => {
+    if (typeof val === "string") {
+      const normalized = val.trim().replace(/\s+/g, "").replace(",", ".");
+      if (normalized === "") return undefined;
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : val;
+    }
+    return val;
+  },
+  z
+    .number({ invalid_type_error: "Prix invalide" })
+    .nonnegative("Le prix doit être positif ou nul")
+    .max(1_000_000, "Prix trop élevé")
+    .optional(),
+);
 
 const imagesSchema = z
   .array(
@@ -12,7 +23,7 @@ const imagesSchema = z
       .string()
       .trim()
       .min(1, "Image manquante")
-      .max(2_000_000, "Image trop volumineuse"),
+      .max(4_000_000, "Image trop volumineuse (max ~3.5MB encodée)"),
   )
   .max(6, "Maximum 6 images")
   .optional()

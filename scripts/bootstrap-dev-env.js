@@ -8,8 +8,6 @@ const dotenv = require("dotenv");
 const root = process.cwd();
 const pkgPath = path.join(root, "package.json");
 const envPath = path.join(root, ".env.local");
-const prismaEnvPath = path.join(root, "prisma", ".env");
-const dbPath = path.join(root, "dev.db");
 
 function assertInRoot() {
   if (!fs.existsSync(pkgPath)) {
@@ -46,7 +44,7 @@ async function main() {
   const sessionSecret = crypto.randomBytes(32).toString("hex");
 
 const envContent = `# DEV TEMPORAIRE - généré automatiquement
-DATABASE_URL=file:./dev.db
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/valwanna?schema=public
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=${adminPassword}
 SESSION_PASSWORD=${sessionSecret}
@@ -54,16 +52,6 @@ SESSION_PASSWORD=${sessionSecret}
 
   fs.writeFileSync(envPath, envContent, { encoding: "utf8" });
   console.log("✅ .env.local généré (DEV TEMPORAIRE). Fichier non committé.");
-
-  fs.mkdirSync(path.dirname(prismaEnvPath), { recursive: true });
-  if (!fs.existsSync(prismaEnvPath) || force) {
-    fs.writeFileSync(prismaEnvPath, 'DATABASE_URL="file:./dev.db"\n', {
-      encoding: "utf8",
-    });
-    console.log("✅ prisma/.env généré (DATABASE_URL uniquement).");
-  } else {
-    console.log("prisma/.env existe déjà. Utilisez --force pour le régénérer si besoin.");
-  }
 
   // Validation post-écriture pour s'assurer qu'aucun placeholder ou valeur invalide ne reste.
   const parsed = dotenv.parse(fs.readFileSync(envPath, "utf8"));
@@ -97,16 +85,14 @@ SESSION_PASSWORD=${sessionSecret}
   console.log("");
 
   let migrateAttempted = false;
-  if (!fs.existsSync(dbPath)) {
+  console.log("Tentative d'application des migrations Prisma (PostgreSQL requis en local)...");
+  try {
     migrateAttempted = true;
-    console.log("Base dev.db absente : tentative d'application des migrations Prisma...");
-    try {
-      execSync("npm run prisma:migrate", { stdio: "inherit" });
-    } catch (error) {
-      console.warn(
-        "⚠️  Impossible d'exécuter la migration automatiquement. Lancez-la manuellement : npm run prisma:migrate",
-      );
-    }
+    execSync("npm run prisma:migrate", { stdio: "inherit" });
+  } catch (error) {
+    console.warn(
+      "⚠️  Impossible d'exécuter la migration automatiquement. Assurez-vous qu'un PostgreSQL tourne en local, puis lancez : npm run prisma:migrate",
+    );
   }
 
   console.log("Prochaines étapes :");
@@ -118,6 +104,6 @@ SESSION_PASSWORD=${sessionSecret}
 }
 
 main().catch((error) => {
-  console.error("Erreur lors du bootstrap de l'environnement dev :", error);
-  process.exit(1);
-});
+    console.error("Erreur lors du bootstrap de l'environnement dev :", error);
+    process.exit(1);
+  });

@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "npm run prisma:generate && next build",
+    "start": "node scripts/run-prisma.js migrate deploy && next start",
     "lint": "next lint",
     "prisma:generate": "node scripts/run-prisma.js generate",
     "prisma:migrate": "node scripts/run-prisma.js migrate dev",
@@ -13,12 +13,13 @@
     "prisma:init": "node scripts/run-prisma.js migrate dev --name init",
     "prisma:studio": "node scripts/run-prisma.js studio",
     "hash:password": "node scripts/generate-hash.js",
+    "railway:build": "npm run prisma:migrate:deploy && npm run build",
     "check:env": "node scripts/check-env.js",
     "bootstrap:dev": "node scripts/bootstrap-dev-env.js",
     "bootstrap:dev:force": "node scripts/bootstrap-dev-env.js --force",
     "debug:env:paths": "node scripts/where-am-i.js",
     "debug:env:keys": "node scripts/show-env-keys.js",
-    "start": "npm run prisma:migrate:deploy && next start"
+    "postinstall": "npm run prisma:generate"
   },
   "dependencies": {
     "@prisma/client": "5.18.0",

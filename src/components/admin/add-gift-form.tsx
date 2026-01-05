@@ -89,7 +89,10 @@ export default function AddGiftForm({ onCreated, onError }: Props) {
     });
 
     if (!parsed.success) {
-      onError("Merci de fournir des champs valides (titre, lien, etc.).");
+      const firstError =
+        parsed.error.issues[0]?.message ??
+        "Merci de fournir des champs valides (titre, lien, etc.).";
+      onError(firstError);
       setLoading(false);
       return;
     }

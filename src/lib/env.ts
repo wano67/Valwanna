@@ -27,18 +27,24 @@ function findProjectRoot(start = process.cwd()): string {
   return start;
 }
 
+const isProduction = process.env.NODE_ENV === "production";
+const isDevelopment = process.env.NODE_ENV === "development";
+
 const rootDir = findProjectRoot();
 const envLocalPath = path.join(rootDir, ".env.local");
 const envPath = path.join(rootDir, ".env");
 
-if (fs.existsSync(envLocalPath)) {
-  dotenv.config({ path: envLocalPath, override: true });
-  if (process.env.NODE_ENV === "development") {
+const isPostgresUrl = (value: string | undefined) =>
+  typeof value === "string" && /^postgres(?:ql)?:\/\//i.test(value.trim());
+
+if (!isProduction && fs.existsSync(envLocalPath)) {
+  dotenv.config({ path: envLocalPath, override: false });
+  if (isDevelopment) {
     console.info("env.ts: loaded .env.local from", envLocalPath);
   }
-} else if (fs.existsSync(envPath)) {
-  dotenv.config({ path: envPath, override: true });
-  if (process.env.NODE_ENV === "development") {
+} else if (!isProduction && fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath, override: false });
+  if (isDevelopment) {
     console.info("env.ts: loaded .env from", envPath);
   }
 }
@@ -52,6 +58,7 @@ if (process.env.LOG_ENV_DEBUG === "true") {
     envPath,
     envExists: fs.existsSync(envPath),
     hasAdminHash: Boolean(hashValue),
+    hasAdminHashB64: Boolean(process.env.ADMIN_PASSWORD_HASH_B64),
     hasAdminPlain: Boolean(process.env.ADMIN_PASSWORD),
     nodeEnv: process.env.NODE_ENV,
     adminHashPrefixOk: /^(?:\$2[aby]\$)/.test(hashValue),
@@ -103,15 +110,28 @@ function validateBase(name: keyof EnvConfig | "ADMIN_PASSWORD", value: string | 
 function resolveAdminHash(): string {
   const isDev = process.env.NODE_ENV === "development";
   const adminHash = process.env.ADMIN_PASSWORD_HASH;
+  const adminHashB64 = process.env.ADMIN_PASSWORD_HASH_B64;
   const adminPlain = process.env.ADMIN_PASSWORD;
   const allowPlainInProd = process.env.ALLOW_PLAINTEXT_ADMIN === "true";
 
   const bcryptPrefix = /^(?:\$2[aby]\$)/;
+  let decodedFromB64: string | null = null;
+  if (!adminHash && adminHashB64) {
+    try {
+      decodedFromB64 = Buffer.from(adminHashB64, "base64").toString("utf8");
+    } catch {
+      throw new Error(
+        "ADMIN_PASSWORD_HASH_B64 invalide (base64). Fournissez un hash bcrypt valide via ADMIN_PASSWORD_HASH. " +
+          guidance,
+      );
+    }
+  }
+  const effectiveAdminHash = adminHash ?? decodedFromB64 ?? undefined;
 
   if (isDev) {
-    if (adminHash && bcryptPrefix.test(adminHash)) {
+    if (effectiveAdminHash && bcryptPrefix.test(effectiveAdminHash)) {
       console.info("env.ts: admin auth using ADMIN_PASSWORD_HASH (dev mode).");
-      return adminHash.trim();
+      return effectiveAdminHash.trim();
     }
     if (adminPlain && adminPlain.length >= 8) {
       if (adminPlain.includes("remplacez") || adminPlain.includes("changez-moi")) {
@@ -131,8 +151,8 @@ function resolveAdminHash(): string {
   }
 
   // Production / non-dev
-  if (adminHash && bcryptPrefix.test(adminHash.trim())) {
-    return adminHash.trim();
+  if (effectiveAdminHash && bcryptPrefix.test(effectiveAdminHash.trim())) {
+    return effectiveAdminHash.trim();
   }
 
   if (adminPlain) {
@@ -148,16 +168,23 @@ function resolveAdminHash(): string {
     );
     return bcrypt.hashSync(adminPlain, 12);
   }
-  if (!adminHash || !bcryptPrefix.test(adminHash.trim())) {
-    throw new Error(
-      `ADMIN_PASSWORD_HASH doit être présent et être un hash bcrypt (commence par $2a$, $2b$ ou $2y$). ${guidance}`,
-    );
-  }
-  return adminHash.trim();
+  throw new Error(
+    `ADMIN_PASSWORD_HASH (ou ADMIN_PASSWORD_HASH_B64) doit être présent et être un hash bcrypt (commence par $2a$, $2b$ ou $2y$). ${guidance}`,
+  );
 }
 
 function loadEnv(): EnvConfig {
   const DATABASE_URL = validateBase("DATABASE_URL", process.env.DATABASE_URL);
+  if (isProduction && !isPostgresUrl(DATABASE_URL)) {
+    throw new Error(
+      `DATABASE_URL doit être une URL PostgreSQL (postgres:// ou postgresql://). ${guidance}`,
+    );
+  }
+  if (!isProduction && !isPostgresUrl(DATABASE_URL)) {
+    console.warn(
+      "DATABASE_URL ne semble pas pointer vers PostgreSQL. Assurez-vous d'utiliser un service Postgres pour appliquer les migrations actuelles.",
+    );
+  }
   const ADMIN_USERNAME = validateBase("ADMIN_USERNAME", process.env.ADMIN_USERNAME);
   const SESSION_PASSWORD = validateBase("SESSION_PASSWORD", process.env.SESSION_PASSWORD);
 
