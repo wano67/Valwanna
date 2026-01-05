@@ -78,7 +78,7 @@ export default function AdminDashboard({
         <div className="space-y-1">
           <h2 className="text-lg font-semibold text-ink">Actions rapides</h2>
           <p className="text-sm text-slate-600">
-            Ajoutez des idées ou gérez celles existantes.
+            Gère les idées en cours ou ajoute-en une nouvelle.
           </p>
         </div>
         <button

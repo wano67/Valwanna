@@ -86,7 +86,7 @@ export default async function GiftDetailPage({
             {gift.title}
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Petite envie du moment (je compte sur toi pour me gâter en douceur 💝).
+            Une envie du moment. Si tu cherches une idée, tu es au bon endroit.
           </p>
           {mainImage ? (
             <div className="mt-4 overflow-hidden rounded-3xl border border-border shadow-soft">
@@ -103,10 +103,10 @@ export default async function GiftDetailPage({
 
           <div className="mt-4 flex flex-wrap gap-3 text-sm text-slate-600">
             <span className="inline-flex items-center rounded-full border border-border bg-white/80 px-3 py-1">
-              Ajouté le {formatDate(gift.createdAt)} (je l&apos;ai repéré depuis ce jour-là)
+              Ajouté le {formatDate(gift.createdAt)}
             </span>
             <span className="inline-flex items-center rounded-full border border-border bg-white/80 px-3 py-1">
-              Mis à jour le {formatDate(gift.updatedAt)} (oui, je rêve encore de lui)
+              Mis à jour le {formatDate(gift.updatedAt)}
             </span>
             {priceLabel ? (
               <span className="inline-flex items-center rounded-full border border-border bg-white/80 px-3 py-1 font-semibold text-ink">

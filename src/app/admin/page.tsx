@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Gift } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -46,18 +48,30 @@ export default async function AdminPage() {
   });
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-14">
+    <main className="relative mx-auto flex max-w-5xl flex-col gap-8 px-4 py-14">
+      <div className="absolute left-4 top-4">
+        <Link
+          href="/"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-white shadow-soft ring-1 ring-border transition hover:-translate-y-0.5"
+        >
+          <img
+            src="/favicon.png"
+            alt="Retour à l'accueil"
+            className="h-full w-full rounded-xl object-cover"
+          />
+        </Link>
+      </div>
       <section className="overflow-hidden rounded-3xl bg-white/80 p-8 shadow-soft ring-1 ring-border backdrop-blur">
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             Tableau de bord
           </p>
           <h1 className="text-3xl font-semibold text-ink sm:text-4xl">
-            Gérer la wishlist
+            Gestion de la liste
           </h1>
           <p className="text-slate-600">
-            Ajoutez, modifiez ou supprimez les idées cadeaux. Les changements
-            sont visibles immédiatement sur la page publique.
+            Ajoute, modifie ou supprime les idées cadeaux. Les changements sont visibles
+            immédiatement sur la page publique.
           </p>
         </div>
       </section>

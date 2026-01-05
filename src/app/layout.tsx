@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import MosaicBackground from "@/components/mosaic-background";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -25,7 +26,8 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`${jakarta.variable} antialiased`}>
-        <div className="min-h-screen flex flex-col">{children}</div>
+        <MosaicBackground />
+        <div className="relative flex min-h-screen flex-col">{children}</div>
       </body>
     </html>
   );

@@ -176,7 +176,7 @@ export default function AddGiftForm({ onCreated, onError }: Props) {
       <div className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold text-ink">Ajouter un cadeau</h2>
         <p className="text-sm text-slate-600">
-          Renseignez un titre (obligatoire) et un lien optionnel.
+          Ajoute une idée à la liste. Le titre suffit; ajoute le lien si tu l&apos;as.
         </p>
       </div>
 
@@ -188,27 +188,29 @@ export default function AddGiftForm({ onCreated, onError }: Props) {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             className="w-full rounded-xl border border-border bg-white px-3 py-2 text-base text-ink shadow-inner focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-            placeholder="Ex: Lego Star Wars"
+            placeholder="Ex: Bouquet de pivoines, sac pastel..."
             required
           />
         </label>
         <label className="flex flex-col gap-2 text-sm font-semibold text-ink">
           URL (optionnel)
-          <input
-            name="url"
-            value={url}
-            onChange={(event) => setUrl(event.target.value)}
-            className="w-full rounded-xl border border-border bg-white px-3 py-2 text-base text-ink shadow-inner focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-            placeholder="https://exemple.com"
-          />
-          <button
-            type="button"
-            onClick={handlePreview}
-            disabled={previewLoading}
-            className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {previewLoading ? "Recherche..." : "Auto-remplir ✨"}
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              name="url"
+              value={url}
+              onChange={(event) => setUrl(event.target.value)}
+              className="w-full rounded-xl border border-border bg-white px-3 py-2 text-base text-ink shadow-inner focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+              placeholder="https://boutique.com/mon-coup-de-coeur"
+            />
+            <button
+              type="button"
+              onClick={handlePreview}
+              disabled={previewLoading}
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {previewLoading ? "Recherche..." : "Auto-remplir ✨"}
+            </button>
+          </div>
           {previewSource ? (
             <p className="text-xs text-slate-500">
               Données récupérées via : {previewSource}
@@ -228,7 +230,7 @@ export default function AddGiftForm({ onCreated, onError }: Props) {
             onChange={(event) => setDescription(event.target.value)}
             className="w-full rounded-xl border border-border bg-white px-3 py-2 text-base text-ink shadow-inner focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
             rows={3}
-            placeholder="Quelques détails sur le cadeau..."
+            placeholder="Pourquoi je l'aime, la couleur souhaitée, la taille..."
           />
         </label>
         <label className="flex flex-col gap-2 text-sm font-semibold text-ink">
@@ -241,7 +243,7 @@ export default function AddGiftForm({ onCreated, onError }: Props) {
             value={price}
             onChange={(event) => setPrice(event.target.value)}
             className="w-full rounded-xl border border-border bg-white px-3 py-2 text-base text-ink shadow-inner focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-            placeholder="49.99"
+            placeholder="Ex: 39.90"
           />
         </label>
         <label className="flex flex-col gap-2 text-sm font-semibold text-ink">

@@ -1,6 +1,8 @@
+/* stylelint-disable at-rule-no-unknown */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
 
 :root {
   color: #2b1b4f;
@@ -10,23 +12,6 @@
 body {
   min-height: 100vh;
   background-color: #fff7fb;
-  background-image:
-    radial-gradient(circle at 15% 18%, rgba(255, 182, 193, 0.5), transparent 32%),
-    radial-gradient(circle at 82% 12%, rgba(196, 181, 253, 0.5), transparent 26%),
-    radial-gradient(circle at 30% 82%, rgba(255, 244, 184, 0.35), transparent 32%),
-    linear-gradient(120deg, rgba(244, 114, 182, 0.12) 0 14%, transparent 14% 28%),
-    linear-gradient(70deg, rgba(196, 181, 253, 0.12) 0 18%, transparent 18% 32%),
-    radial-gradient(#ffd6e8 1px, transparent 1px),
-    radial-gradient(#e3d7ff 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    100% 100%,
-    100% 100%,
-    260px 260px,
-    230px 230px,
-    18px 18px,
-    22px 22px;
-  background-position: center;
   color: #2b1b4f;
   font-family: var(--font-sans), "Segoe UI", system-ui, -apple-system, sans-serif;
 }
@@ -46,4 +31,97 @@ a {
 
 ::selection {
   background: #fecdd3;
+}
+
+@keyframes mosaic-pop {
+  0% {
+    transform: scale(0.75) translateY(6px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes mosaic-float {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -8px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes mosaic-float-short {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes mosaic-loader-fade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.mosaic-tile {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.07));
+}
+
+.animate-mosaic-pop {
+  animation: mosaic-pop 0.55s ease forwards;
+}
+
+.animate-mosaic-float {
+  animation: mosaic-float 8s ease-in-out infinite;
+}
+
+.animate-mosaic-float-short {
+  animation: mosaic-float-short 4s ease-in-out infinite;
+}
+
+.animate-mosaic-loader-fade {
+  animation: mosaic-loader-fade 0.9s ease forwards;
+}
+
+@keyframes mosaic-bubbles {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0) scale(1.04);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-mosaic-bubbles {
+  animation: mosaic-bubbles 6s ease-in-out infinite;
+}
+
+@keyframes mosaic-pan {
+  0% {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  50% {
+    background-position: 8px 10px, -6px 12px, 10px -8px, 12px 14px, -10px -8px;
+  }
+  100% {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
 }

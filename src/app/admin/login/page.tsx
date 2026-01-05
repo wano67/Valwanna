@@ -27,12 +27,11 @@ export default async function AdminLoginPage() {
       <div className="rounded-3xl bg-white/80 p-8 shadow-soft ring-1 ring-border">
         <div className="mb-6 space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Administration
+            Wishlist
           </p>
           <h1 className="text-3xl font-semibold text-ink">Connexion</h1>
           <p className="text-slate-600">
             Coucou, c&apos;est la porte secrète pour gérer ma wishlist. 🤍
-            (Promis, je partage des câlins en échange de ta bonne gestion.)
           </p>
         </div>
         {sessionError ? (
