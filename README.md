@@ -32,6 +32,7 @@ Variables nécessaires :
 - `ADMIN_USERNAME` : identifiant admin.
 - DEV : `ADMIN_PASSWORD` (plain, >=8 caractères) ou `ADMIN_PASSWORD_HASH` (bcrypt). Le bootstrap met `ADMIN_PASSWORD` automatiquement.
 - PROD : utiliser `ADMIN_PASSWORD_HASH` (bcrypt) généré via `npm run hash:password -- "motDePasse"`. Ne laissez pas `ADMIN_PASSWORD` en production.
+- Build local avec mot de passe en clair : si vous avez seulement `ADMIN_PASSWORD` et pas encore de hash, vous pouvez forcer `ALLOW_PLAINTEXT_ADMIN=true npm run build` (toléré pour un build local uniquement, à ne pas déployer).
 - `SESSION_PASSWORD` : secret long (32+ caractères) pour chiffrer la session.
 - `MICROLINK_API_KEY` : optionnel, améliore l’auto-remplissage quand un site bloque le scraping.
 - `ENABLE_PLAYWRIGHT_PREVIEW` : optionnel, mettre `true` pour activer le fallback headless Playwright sur les sites qui renvoient 403/JS-only.

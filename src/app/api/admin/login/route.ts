@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
 
 export async function POST(request: Request) {
   let sessionRes: Response;
-  let session;
+  let session: Awaited<ReturnType<typeof getSessionWithResponse>>["session"];
   try {
     const result = await getSessionWithResponse(request);
     sessionRes = result.res;

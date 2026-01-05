@@ -1,26 +1,25 @@
 import { redirect } from "next/navigation";
-import { getSessionWithResponse } from "@/lib/session";
-import type { SessionData } from "@/lib/session";
+import { getSessionData } from "@/lib/session";
 import LoginForm from "@/components/admin/login-form";
 
 export const metadata = {
   title: "Connexion admin | Valwanna",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminLoginPage() {
-  let session: (SessionData & Record<string, unknown>) | null = null;
   let sessionError = false;
 
   try {
-    const { session: s } = await getSessionWithResponse();
-    session = s;
+    const session = await getSessionData();
+    if (session?.isAdmin) {
+      redirect("/admin");
+    }
   } catch (error) {
     console.error("Erreur de récupération de session", error);
     sessionError = true;
-  }
-
-  if (session?.isAdmin) {
-    redirect("/admin");
   }
 
   return (

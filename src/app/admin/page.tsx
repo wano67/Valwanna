@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Gift } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { getSessionWithResponse } from "@/lib/session";
-import type { SessionData } from "@/lib/session";
+import { getSessionData } from "@/lib/session";
 import { toGiftDTO } from "@/lib/gift-serializer";
 import AdminDashboard from "@/components/admin/admin-dashboard";
 import type { GiftDTO } from "@/types/gift";
@@ -15,12 +14,12 @@ function serializeGift(gift: Gift): GiftDTO {
 }
 
 export default async function AdminPage() {
-  let session: (SessionData & Record<string, unknown>) | null = null;
   let sessionError = false;
+  let isAdmin = false;
 
   try {
-    const { session: s } = await getSessionWithResponse();
-    session = s;
+    const session = await getSessionData();
+    isAdmin = Boolean(session?.isAdmin);
   } catch (error) {
     console.error("Erreur de récupération de session", error);
     sessionError = true;
@@ -38,7 +37,7 @@ export default async function AdminPage() {
     );
   }
 
-  if (!session?.isAdmin) {
+  if (!isAdmin) {
     redirect("/admin/login");
   }
 

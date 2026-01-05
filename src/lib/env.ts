@@ -15,8 +15,8 @@ type EnvConfig = {
 
 function findProjectRoot(start = process.cwd()): string {
   let dir = start;
-  // Limit search depth to avoid infinite loops.
-  for (let i = 0; i < 5; i += 1) {
+  // Limit search depth to avoid infinite loops (but allow deep cwd during Next build).
+  for (let i = 0; i < 10; i += 1) {
     if (fs.existsSync(path.join(dir, "package.json"))) {
       return dir;
     }
@@ -32,15 +32,32 @@ const envLocalPath = path.join(rootDir, ".env.local");
 const envPath = path.join(rootDir, ".env");
 
 if (fs.existsSync(envLocalPath)) {
-  dotenv.config({ path: envLocalPath, override: false });
+  dotenv.config({ path: envLocalPath, override: true });
   if (process.env.NODE_ENV === "development") {
     console.info("env.ts: loaded .env.local from", envLocalPath);
   }
 } else if (fs.existsSync(envPath)) {
-  dotenv.config({ path: envPath, override: false });
+  dotenv.config({ path: envPath, override: true });
   if (process.env.NODE_ENV === "development") {
     console.info("env.ts: loaded .env from", envPath);
   }
+}
+
+if (process.env.LOG_ENV_DEBUG === "true") {
+  const hashValue = process.env.ADMIN_PASSWORD_HASH ?? "";
+  console.info("env.ts debug", {
+    rootDir,
+    envLocalPath,
+    envLocalExists: fs.existsSync(envLocalPath),
+    envPath,
+    envExists: fs.existsSync(envPath),
+    hasAdminHash: Boolean(hashValue),
+    hasAdminPlain: Boolean(process.env.ADMIN_PASSWORD),
+    nodeEnv: process.env.NODE_ENV,
+    adminHashPrefixOk: /^(?:\$2[aby]\$)/.test(hashValue),
+    hashPreview: hashValue.slice(0, 12),
+    hashFull: hashValue,
+  });
 }
 
 if (process.env.NODE_ENV === "development") {
@@ -87,6 +104,7 @@ function resolveAdminHash(): string {
   const isDev = process.env.NODE_ENV === "development";
   const adminHash = process.env.ADMIN_PASSWORD_HASH;
   const adminPlain = process.env.ADMIN_PASSWORD;
+  const allowPlainInProd = process.env.ALLOW_PLAINTEXT_ADMIN === "true";
 
   const bcryptPrefix = /^(?:\$2[aby]\$)/;
 
@@ -113,11 +131,22 @@ function resolveAdminHash(): string {
   }
 
   // Production / non-dev
+  if (adminHash && bcryptPrefix.test(adminHash.trim())) {
+    return adminHash.trim();
+  }
+
   if (adminPlain) {
-    throw new Error(
-      "ADMIN_PASSWORD (plaintext) ne doit pas être utilisé en production. Fournissez ADMIN_PASSWORD_HASH (bcrypt). " +
-        guidance,
+    if (!allowPlainInProd) {
+      throw new Error(
+        "ADMIN_PASSWORD (plaintext) ne doit pas être utilisé en production. Fournissez ADMIN_PASSWORD_HASH (bcrypt). " +
+          "Si vous comprenez le risque et voulez forcer le build local, définissez ALLOW_PLAINTEXT_ADMIN=true. " +
+          guidance,
+      );
+    }
+    console.warn(
+      "AVERTISSEMENT: ALLOW_PLAINTEXT_ADMIN=true est actif, ADMIN_PASSWORD sera hashé en mémoire pour ce build.",
     );
+    return bcrypt.hashSync(adminPlain, 12);
   }
   if (!adminHash || !bcryptPrefix.test(adminHash.trim())) {
     throw new Error(

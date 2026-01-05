@@ -3,10 +3,11 @@ import { ExtractResult } from "./providers/types";
 
 export async function extractWithHeadless(url: string): Promise<ExtractResult> {
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ ignoreHTTPSErrors: true });
-  const page = await context.newPage({
+  const context = await browser.newContext({
+    ignoreHTTPSErrors: true,
     userAgent: "ValwannaBot/1.1 (+https://example.com)",
   });
+  const page = await context.newPage();
   try {
     try {
       await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
@@ -42,7 +43,13 @@ export async function extractWithHeadless(url: string): Promise<ExtractResult> {
       };
     });
 
-    const images = Array.from(new Set([data.ogImage, ...(data.images ?? [])].filter(Boolean))).slice(0, 6);
+    const images = Array.from(
+      new Set(
+        [data.ogImage, ...(data.images ?? [])].filter(
+          (val): val is string => typeof val === "string" && val.length > 0,
+        ),
+      ),
+    ).slice(0, 6);
 
     let price: number | undefined;
     let currency: string | undefined;

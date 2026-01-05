@@ -1,4 +1,4 @@
-import { getIronSession, type SessionOptions } from "iron-session";
+import { getIronSession, type IronSessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 import { env } from "@/lib/env";
 
@@ -6,7 +6,8 @@ export type SessionData = {
   isAdmin?: boolean;
 };
 
-const baseSessionOptions: SessionOptions = {
+// Helper used only by API routes that need to mutate the session.
+const baseSessionOptions: IronSessionOptions = {
   cookieName: "gift_admin_session",
   password: env.SESSION_PASSWORD,
   cookieOptions: {
@@ -27,8 +28,17 @@ function buildRequestFromCookies(): Request {
 export async function getSessionWithResponse(request?: Request) {
   const req = request ?? buildRequestFromCookies();
   const res = new Response();
-  const session = await getIronSession<SessionData>(req, res, baseSessionOptions);
+  const session = await getIronSession(req, res, baseSessionOptions);
   return { session, res };
+}
+
+// Server components should consume a plain data shape to avoid IronSession typing issues.
+export async function getSessionData(): Promise<SessionData> {
+  const req = buildRequestFromCookies();
+  const res = new Response();
+  const session = await getIronSession(req, res, baseSessionOptions);
+  // return only serializable data
+  return { isAdmin: Boolean(session.isAdmin) };
 }
 
 export async function requireAdminSession(request?: Request) {
