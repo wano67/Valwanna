@@ -31,7 +31,8 @@ export default async function AdminLoginPage() {
           </p>
           <h1 className="text-3xl font-semibold text-ink">Connexion</h1>
           <p className="text-slate-600">
-            Accès réservé à l&apos;administrateur de la wishlist.
+            Coucou, c&apos;est la porte secrète pour gérer ma wishlist. 🤍
+            (Promis, je partage des câlins en échange de ta bonne gestion.)
           </p>
         </div>
         {sessionError ? (

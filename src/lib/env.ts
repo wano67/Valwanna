@@ -8,6 +8,9 @@ type EnvConfig = {
   ADMIN_USERNAME: string;
   ADMIN_PASSWORD_HASH: string;
   SESSION_PASSWORD: string;
+  MICROLINK_API_KEY?: string;
+  SCRAPER_API_KEY?: string;
+  SERPER_API_KEY?: string;
 };
 
 function findProjectRoot(start = process.cwd()): string {
@@ -140,6 +143,9 @@ function loadEnv(): EnvConfig {
     ADMIN_USERNAME,
     ADMIN_PASSWORD_HASH,
     SESSION_PASSWORD,
+    MICROLINK_API_KEY: process.env.MICROLINK_API_KEY?.trim() || undefined,
+    SCRAPER_API_KEY: process.env.SCRAPER_API_KEY?.trim() || undefined,
+    SERPER_API_KEY: process.env.SERPER_API_KEY?.trim() || undefined,
   };
 }
 

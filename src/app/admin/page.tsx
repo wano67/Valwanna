@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { Gift } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSessionWithResponse } from "@/lib/session";
+import { toGiftDTO } from "@/lib/gift-serializer";
 import AdminDashboard from "@/components/admin/admin-dashboard";
 import type { GiftDTO } from "@/types/gift";
 
@@ -9,13 +10,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 function serializeGift(gift: Gift): GiftDTO {
-  return {
-    id: gift.id,
-    title: gift.title,
-    url: gift.url,
-    createdAt: gift.createdAt.toISOString(),
-    updatedAt: gift.updatedAt.toISOString(),
-  };
+  return toGiftDTO(gift);
 }
 
 export default async function AdminPage() {

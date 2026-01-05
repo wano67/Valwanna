@@ -11,6 +11,10 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Valwanna | Wishlist",
   description: "Wishlist de cadeaux avec espace administrateur sécurisé.",
+  icons: [
+    { rel: "icon", url: "/favicon.png" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+  ],
 };
 
 export default function RootLayout({

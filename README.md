@@ -33,6 +33,10 @@ Variables nécessaires :
 - DEV : `ADMIN_PASSWORD` (plain, >=8 caractères) ou `ADMIN_PASSWORD_HASH` (bcrypt). Le bootstrap met `ADMIN_PASSWORD` automatiquement.
 - PROD : utiliser `ADMIN_PASSWORD_HASH` (bcrypt) généré via `npm run hash:password -- "motDePasse"`. Ne laissez pas `ADMIN_PASSWORD` en production.
 - `SESSION_PASSWORD` : secret long (32+ caractères) pour chiffrer la session.
+- `MICROLINK_API_KEY` : optionnel, améliore l’auto-remplissage quand un site bloque le scraping.
+- `ENABLE_PLAYWRIGHT_PREVIEW` : optionnel, mettre `true` pour activer le fallback headless Playwright sur les sites qui renvoient 403/JS-only.
+- `SCRAPER_API_KEY` : optionnel, proxy anti-bot (ScraperAPI ou équivalent) utilisé avant le headless.
+- `SERPER_API_KEY` : optionnel, utilise serper.dev comme fallback supplémentaire pour récupérer titre/description/images.
 
 ### Exemple `.env.local`
 > Placez ce fichier **à la racine du projet (même niveau que package.json)** et ne le commitez pas.
@@ -75,6 +79,7 @@ npm run dev
 - `POST /api/gifts` : création (admin).
 - `PUT /api/gifts/:id` : mise à jour (admin).
 - `DELETE /api/gifts/:id` : suppression (admin).
+- `POST /api/preview` : (admin) auto-remplissage depuis une URL publique (Open Graph / Twitter / JSON-LD), protégé contre SSRF.
 
 ## Pages publiques
 - `/` : liste complète des cadeaux (lecture seule) avec liens externes si fournis.
@@ -109,6 +114,20 @@ Checklist :
 - Relancez : `rm -rf .next && npm run dev`
 - En dev, contrôlez `/api/_debug/env` (les clés doivent être à `true` et `adminHashLooksBcrypt` à `true`).
 - Si monorepo, assurez-vous que `.env.local` est au même niveau que le `package.json` de cette app Next.
+
+## Auto-remplissage depuis une URL (admin)
+- Ajoutez un lien dans le formulaire puis cliquez sur “Auto-remplir ✨” pour récupérer titre/description/prix/images via Open Graph / Twitter / JSON-LD.
+- Si le site bloque (403/401/429) ou est JS-only, fallback Microlink (configure `MICROLINK_API_KEY` pour plus de compatibilité).
+- Pour certains sites (Fnac, Galeries Lafayette), un provider dédié est utilisé. Si la page bloque le scraping, un fallback headless Playwright peut être activé avec `ENABLE_PLAYWRIGHT_PREVIEW=true` (dépendance `playwright`).
+- Possibilité d’utiliser un proxy anti-bot (`SCRAPER_API_KEY` avec ScraperAPI, etc.) pour augmenter la compatibilité avant le headless.
+- serper.dev (`SERPER_API_KEY`) est utilisé en ultime recours pour essayer de récupérer titre/description/images via les résultats enrichis.
+- Protection SSRF : URLs http/https uniquement, blocage IP privées/localhost et limite de taille/temps de la réponse.
+- Si rien n’est trouvé, les champs restent vides; vous pouvez saisir manuellement.
+
+## Test manuel rapide
+1) `npm run dev`
+2) `/admin/login` → admin + mot de passe généré par `bootstrap:dev`
+3) Ajouter un cadeau (optionnel: auto-remplir avec un lien) → vérifier qu’il apparaît sur `/` et sur `/gifts/{id}` (description, prix, images si présents).
 
 ## Développement
 - `npm run lint` pour les vérifications ESLint.
